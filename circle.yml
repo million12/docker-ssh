@@ -1,0 +1,22 @@
+machine:
+  services:
+    - docker
+  environment:
+    ROOT_PASS: circle-pass
+
+dependencies:
+  pre:
+    - docker pull million12/centos-supervisor
+  post:
+      # Build test image
+      - docker build -t million12/ssh:test .
+
+test:
+  override:
+    - docker run -d --name ssh -p 10022:22 --env="ROOT_PASS=${ROOT_PASS}" million12/ssh:test
+    - docker logs -f ssh | tee -a ${CIRCLE_ARTIFACTS}/ssh.log:
+        background: true
+    # Check if sshd process is in RUNNING state
+    - while true; do if grep "sshd entered RUNNING state" -a ${CIRCLE_ARTIFACTS}/ssh.log; then break; else sleep 1; fi done
+    # Check if password was changed to user provided.
+    - cat ${CIRCLE_ARTIFACTS}/ssh.log | grep "${ROOT_PASS}"
