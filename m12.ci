@@ -1,0 +1,6 @@
+docker build -t million12/ssh .
+docker run -d --name ssh -e ROOT_PASS=12345 million12/ssh
+while true; do if grep 12345 | docker logs ssh; then break; else sleep 1; fi done
+#Cleaning
+docker rm -f ssh
+docker rmi -f million12/ssh
