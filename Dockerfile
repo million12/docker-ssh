@@ -1,5 +1,4 @@
 FROM million12/centos-supervisor
-MAINTAINER Przemyslaw Ozgo linux@ozgo.info
 
 RUN \
     yum install --nogpgcheck -y openssh-server openssh-clients pwgen sudo hostname wget patch htop iftop vim mc links && \
