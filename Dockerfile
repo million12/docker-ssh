@@ -1,8 +1,22 @@
 FROM million12/centos-supervisor
-MAINTAINER Przemyslaw Ozgo linux@ozgo.info
+
+ENV ROOT_PASS=password
 
 RUN \
-    yum install --nogpgcheck -y openssh-server openssh-clients pwgen sudo hostname wget patch htop iftop vim mc links && \
+    rpm --rebuilddb && yum clean all && \
+    yum install --nogpgcheck -y \
+                                  openssh-server \
+                                  openssh-clients \
+                                  pwgen \
+                                  sudo \
+                                  hostname \
+                                  wget \
+                                  patch \
+                                  htop \
+                                  iftop \
+                                  vim \
+                                  mc \
+                                  links && \
     yum clean all && \
 
     ssh-keygen -q -b 1024 -N '' -t rsa -f /etc/ssh/ssh_host_rsa_key && \
@@ -13,8 +27,6 @@ RUN \
     sed -i -r 's/.?ChallengeResponseAuthentication.+/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config && \
     sed -i -r 's/.?PermitRootLogin.+/PermitRootLogin yes/' /etc/ssh/sshd_config
 
-ENV ROOT_PASS password
-
-ADD container-files /
+COPY container-files /
 
 EXPOSE 22
